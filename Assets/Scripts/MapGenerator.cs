@@ -46,7 +46,7 @@ public class MapGenerator : MonoBehaviour
     [Header("Debug")]
     public bool autoUpdate;
 
-    private const int mapChunkSize = 241;
+    public const int mapChunkSize = 241;
 
     public void GenerateMap()
     {
