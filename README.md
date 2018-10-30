@@ -1,2 +1,2 @@
-# ProceduralLand
+# ProceduralTerrain
 Learning Terrain Generation
