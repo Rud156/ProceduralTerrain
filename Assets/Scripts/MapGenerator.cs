@@ -35,6 +35,7 @@ public class MapGenerator : MonoBehaviour
     [Header("Mesh Data")]
     public float heightMultiplier;
     public AnimationCurve heightCurve;
+    public bool useFlatShading;
 
     [Header("Color Data")]
     public TerrainType[] regions;
@@ -43,12 +44,26 @@ public class MapGenerator : MonoBehaviour
     [Header("Debug")]
     public bool autoUpdate;
 
-    public const int mapChunkSize = 239;
-
     private Queue<MapThreadInfo<MapData>> _mapDataThreadInfoQueue;
     private Queue<MapThreadInfo<MeshData>> _meshDataThreadInfoQueue;
 
+    private static MapGenerator _instance;
+
     private float[,] _falloffMap;
+
+    public static int mapChunkSize
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = FindObjectOfType<MapGenerator>();
+
+            if (_instance.useFlatShading)
+                return 95;
+            else
+                return 239;
+        }
+    }
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
@@ -98,7 +113,7 @@ public class MapGenerator : MonoBehaviour
                 mapChunkSize, mapChunkSize));
         else if (drawMode == DrawMode.Mesh)
             mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, heightMultiplier,
-                heightCurve, editorPreviewLOD),
+                heightCurve, editorPreviewLOD, useFlatShading),
                 TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
         else if (drawMode == DrawMode.FalloffMap)
             mapDisplay.DrawTexture(TextureGenerator.TextureFromHeightMap(
@@ -140,7 +155,7 @@ public class MapGenerator : MonoBehaviour
     {
         MeshData meshData =
             MeshGenerator.GenerateTerrainMesh(mapData.heightMap,
-                heightMultiplier, heightCurve, lod);
+                heightMultiplier, heightCurve, lod, useFlatShading);
         lock (_meshDataThreadInfoQueue)
         {
             _meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
