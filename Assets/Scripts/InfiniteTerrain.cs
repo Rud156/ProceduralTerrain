@@ -96,6 +96,7 @@ public class InfiniteTerrain : MonoBehaviour
 
         private MeshRenderer _meshRenderer;
         private MeshFilter _meshFilter;
+        private MeshCollider _meshCollider;
 
         private LODInfo[] _detailLevels;
         private LODMesh[] _lodMeshes;
@@ -123,6 +124,7 @@ public class InfiniteTerrain : MonoBehaviour
             _meshRenderer = _meshObject.AddComponent<MeshRenderer>();
             _meshRenderer.material = material;
             _meshFilter = _meshObject.AddComponent<MeshFilter>();
+            _meshCollider = _meshObject.AddComponent<MeshCollider>();
 
             // Dividing by 10 as plane is 10 units by default
             // _meshObject.transform.localScale = Vector3.one * size / 10f;
@@ -162,6 +164,7 @@ public class InfiniteTerrain : MonoBehaviour
                     {
                         _prevLODIndex = lodIndex;
                         _meshFilter.mesh = lodMesh.mesh;
+                        _meshCollider.sharedMesh = lodMesh.mesh;
                     }
                     else if (!lodMesh.hasRequestedMesh)
                         lodMesh.RequestMesh(_mapData);
