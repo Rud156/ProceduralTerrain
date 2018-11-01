@@ -81,7 +81,7 @@ public class MapGenerator : MonoBehaviour
 
     public void DrawMapInEditor()
     {
-        MapData mapData = GenerateMapData();
+        MapData mapData = GenerateMapData(Vector2.zero);
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
 
         if (drawMode == DrawMode.NoiseMap)
@@ -95,15 +95,24 @@ public class MapGenerator : MonoBehaviour
                 TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
     }
 
-    public void RequestMapData(Action<MapData> callback)
+    public void RequestMapData(Vector2 center, Action<MapData> callback)
     {
         ThreadStart threadStart = delegate
         {
-            MapDataThread(callback);
+            MapDataThread(center, callback);
         };
 
         new Thread(threadStart).Start();
 
+    }
+
+    private void MapDataThread(Vector2 center, Action<MapData> callback)
+    {
+        MapData mapData = GenerateMapData(center);
+        lock (_mapDataThreadInfoQueue)
+        {
+            _mapDataThreadInfoQueue.Enqueue(new MapThreadInfo<MapData>(callback, mapData));
+        }
     }
 
     public void RequestMeshData(MapData mapData, int lod, Action<MeshData> callback)
@@ -114,15 +123,6 @@ public class MapGenerator : MonoBehaviour
         };
 
         new Thread(threadStart).Start();
-    }
-
-    private void MapDataThread(Action<MapData> callback)
-    {
-        MapData mapData = GenerateMapData();
-        lock (_mapDataThreadInfoQueue)
-        {
-            _mapDataThreadInfoQueue.Enqueue(new MapThreadInfo<MapData>(callback, mapData));
-        }
     }
 
     private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
@@ -136,11 +136,11 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    private MapData GenerateMapData()
+    private MapData GenerateMapData(Vector2 center)
     {
         float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale,
             octaves, persistance, lacunarity,
-            offset);
+          center + offset);
 
         Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
         for (int x = 0; x < mapChunkSize; x++)

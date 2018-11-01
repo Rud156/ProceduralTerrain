@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class InfiniteTerrain : MonoBehaviour
 {
+    private const float _viewerMoveThresholdForChunkUpdate = 25f;
+    private const float _sqrViewerMoveThresholdForChunkUpdate =
+        _viewerMoveThresholdForChunkUpdate * _viewerMoveThresholdForChunkUpdate;
+
     public static float maxViewDistance;
     public static Vector2 viewerPosition;
 
@@ -17,6 +21,8 @@ public class InfiniteTerrain : MonoBehaviour
     private Dictionary<Vector2, TerrainChunk> _terrainChunkDict;
     private List<TerrainChunk> _terrainChunksVisibleLastUpdate;
     private static MapGenerator _mapGenerator;
+
+    private Vector2 _prevViewerPosition;
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
@@ -33,6 +39,8 @@ public class InfiniteTerrain : MonoBehaviour
         _terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
 
         _mapGenerator = GameObject.FindObjectOfType<MapGenerator>();
+
+        UpdateVisibleChunks();
     }
 
     /// <summary>
@@ -41,7 +49,12 @@ public class InfiniteTerrain : MonoBehaviour
     void Update()
     {
         viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
-        UpdateVisibleChunks();
+
+        if ((_prevViewerPosition - viewerPosition).sqrMagnitude > _sqrViewerMoveThresholdForChunkUpdate)
+        {
+            UpdateVisibleChunks();
+            _prevViewerPosition = viewerPosition;
+        }
     }
 
     private void UpdateVisibleChunks()
@@ -116,10 +129,10 @@ public class InfiniteTerrain : MonoBehaviour
 
             _lodMeshes = new LODMesh[detailLevels.Length];
             for (int i = 0; i < detailLevels.Length; i++)
-                _lodMeshes[i] = new LODMesh(detailLevels[i].lod);
+                _lodMeshes[i] = new LODMesh(detailLevels[i].lod, UpdateTerrainChunk);
 
 
-            _mapGenerator.RequestMapData(OnMapDataReceived);
+            _mapGenerator.RequestMapData(_position, OnMapDataReceived);
         }
 
         public void UpdateTerrainChunk()
@@ -165,6 +178,12 @@ public class InfiniteTerrain : MonoBehaviour
         {
             _mapData = mapData;
             _mapDataReceived = true;
+
+            Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap,
+                MapGenerator.mapChunkSize, MapGenerator.mapChunkSize);
+            _meshRenderer.material.mainTexture = texture;
+
+            UpdateTerrainChunk();
         }
 
         private void OnMeshDataReceived(MeshData meshData) => _meshFilter.mesh = meshData.CreateMesh();
@@ -177,10 +196,12 @@ public class InfiniteTerrain : MonoBehaviour
         public bool hasMesh;
 
         private int _lod;
+        private System.Action _updateCallback;
 
-        public LODMesh(int lod)
+        public LODMesh(int lod, System.Action callback)
         {
-            this._lod = lod;
+            _lod = lod;
+            _updateCallback = callback;
         }
 
         public void RequestMesh(MapData mapData)
@@ -193,6 +214,8 @@ public class InfiniteTerrain : MonoBehaviour
         {
             mesh = meshData.CreateMesh();
             hasMesh = true;
+
+            _updateCallback();
         }
     }
 
