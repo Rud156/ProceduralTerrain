@@ -43,7 +43,7 @@ public class MapGenerator : MonoBehaviour
     [Header("Debug")]
     public bool autoUpdate;
 
-    public const int mapChunkSize = 241;
+    public const int mapChunkSize = 239;
 
     private Queue<MapThreadInfo<MapData>> _mapDataThreadInfoQueue;
     private Queue<MapThreadInfo<MeshData>> _meshDataThreadInfoQueue;
@@ -149,7 +149,7 @@ public class MapGenerator : MonoBehaviour
 
     private MapData GenerateMapData(Vector2 center)
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale,
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize + 2, mapChunkSize + 2, seed, noiseScale,
             octaves, persistance, lacunarity,
           center + offset, normalizedMode);
 
