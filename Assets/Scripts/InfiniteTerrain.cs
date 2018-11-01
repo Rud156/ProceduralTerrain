@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class InfiniteTerrain : MonoBehaviour
 {
+    private const float scale = 5;
     private const float _viewerMoveThresholdForChunkUpdate = 25f;
     private const float _sqrViewerMoveThresholdForChunkUpdate =
         _viewerMoveThresholdForChunkUpdate * _viewerMoveThresholdForChunkUpdate;
 
     public static float maxViewDistance;
     public static Vector2 viewerPosition;
+    private static List<TerrainChunk> _terrainChunksVisibleLastUpdate;
 
     public Transform viewer;
     public Material mapMaterial;
@@ -19,7 +21,6 @@ public class InfiniteTerrain : MonoBehaviour
     private int _chunksVisibleInViewDistance;
 
     private Dictionary<Vector2, TerrainChunk> _terrainChunkDict;
-    private List<TerrainChunk> _terrainChunksVisibleLastUpdate;
     private static MapGenerator _mapGenerator;
 
     private Vector2 _prevViewerPosition;
@@ -48,7 +49,7 @@ public class InfiniteTerrain : MonoBehaviour
     /// </summary>
     void Update()
     {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
+        viewerPosition = (new Vector2(viewer.position.x, viewer.position.z) / scale);
 
         if ((_prevViewerPosition - viewerPosition).sqrMagnitude > _sqrViewerMoveThresholdForChunkUpdate)
         {
@@ -78,8 +79,7 @@ public class InfiniteTerrain : MonoBehaviour
                 if (_terrainChunkDict.ContainsKey(viewChunkCoord))
                 {
                     _terrainChunkDict[viewChunkCoord].UpdateTerrainChunk();
-                    if (_terrainChunkDict[viewChunkCoord].IsVisible())
-                        _terrainChunksVisibleLastUpdate.Add(_terrainChunkDict[viewChunkCoord]);
+
                 }
                 else
                     _terrainChunkDict.Add(viewChunkCoord,
@@ -116,8 +116,9 @@ public class InfiniteTerrain : MonoBehaviour
             Vector3 positionV3 = new Vector3(_position.x, 0, _position.y);
 
             _meshObject = new GameObject("Terrain Chunk");
-            _meshObject.transform.position = positionV3;
+            _meshObject.transform.position = positionV3 * scale;
             _meshObject.transform.SetParent(parent);
+            _meshObject.transform.localScale = Vector3.one * scale;
 
             _meshRenderer = _meshObject.AddComponent<MeshRenderer>();
             _meshRenderer.material = material;
@@ -165,6 +166,8 @@ public class InfiniteTerrain : MonoBehaviour
                     else if (!lodMesh.hasRequestedMesh)
                         lodMesh.RequestMesh(_mapData);
                 }
+
+                _terrainChunksVisibleLastUpdate.Add(this);
             }
 
             SetVisible(visible);
