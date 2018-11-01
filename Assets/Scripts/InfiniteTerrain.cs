@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InfiniteTerrain : MonoBehaviour
 {
-    private const float scale = 1;
+    private const float scale = 2;
     private const float _viewerMoveThresholdForChunkUpdate = 25f;
     private const float _sqrViewerMoveThresholdForChunkUpdate =
         _viewerMoveThresholdForChunkUpdate * _viewerMoveThresholdForChunkUpdate;
@@ -100,6 +100,7 @@ public class InfiniteTerrain : MonoBehaviour
 
         private LODInfo[] _detailLevels;
         private LODMesh[] _lodMeshes;
+        private LODMesh _collisionLODMesh;
 
         private MapData _mapData;
 
@@ -132,7 +133,11 @@ public class InfiniteTerrain : MonoBehaviour
 
             _lodMeshes = new LODMesh[detailLevels.Length];
             for (int i = 0; i < detailLevels.Length; i++)
+            {
                 _lodMeshes[i] = new LODMesh(detailLevels[i].lod, UpdateTerrainChunk);
+                if (detailLevels[i].useForCollider)
+                    _collisionLODMesh = _lodMeshes[i];
+            }
 
 
             _mapGenerator.RequestMapData(_position, OnMapDataReceived);
@@ -164,10 +169,18 @@ public class InfiniteTerrain : MonoBehaviour
                     {
                         _prevLODIndex = lodIndex;
                         _meshFilter.mesh = lodMesh.mesh;
-                        _meshCollider.sharedMesh = lodMesh.mesh;
                     }
                     else if (!lodMesh.hasRequestedMesh)
                         lodMesh.RequestMesh(_mapData);
+                }
+
+                if (lodIndex == 0)
+                {
+                    if (_collisionLODMesh.hasMesh)
+                        _meshCollider.sharedMesh = _collisionLODMesh.mesh;
+                    else if (!_collisionLODMesh.hasRequestedMesh)
+                        _collisionLODMesh.RequestMesh(_mapData);
+
                 }
 
                 _terrainChunksVisibleLastUpdate.Add(this);
@@ -230,5 +243,6 @@ public class InfiniteTerrain : MonoBehaviour
     {
         public int lod;
         public float visibleDistanceThreshold;
+        public bool useForCollider;
     }
 }
