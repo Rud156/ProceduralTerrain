@@ -24,6 +24,8 @@ public class InfiniteTerrain : MonoBehaviour
     /// </summary>
     void Start()
     {
+        maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
+
         _chunkSize = MapGenerator.mapChunkSize - 1;
         _chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / _chunkSize);
 
@@ -31,8 +33,6 @@ public class InfiniteTerrain : MonoBehaviour
         _terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
 
         _mapGenerator = GameObject.FindObjectOfType<MapGenerator>();
-
-        maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
     }
 
     /// <summary>
@@ -115,8 +115,8 @@ public class InfiniteTerrain : MonoBehaviour
             SetVisible(false);
 
             _lodMeshes = new LODMesh[detailLevels.Length];
-            for (int i = 0; i < _lodMeshes.Length; i++)
-                _lodMeshes[i] = new LODMesh(detailLevels[i].LOD);
+            for (int i = 0; i < detailLevels.Length; i++)
+                _lodMeshes[i] = new LODMesh(detailLevels[i].lod);
 
 
             _mapGenerator.RequestMapData(OnMapDataReceived);
@@ -146,8 +146,8 @@ public class InfiniteTerrain : MonoBehaviour
                     LODMesh lodMesh = _lodMeshes[lodIndex];
                     if (lodMesh.hasMesh)
                     {
-                        _meshFilter.mesh = lodMesh.mesh;
                         _prevLODIndex = lodIndex;
+                        _meshFilter.mesh = lodMesh.mesh;
                     }
                     else if (!lodMesh.hasRequestedMesh)
                         lodMesh.RequestMesh(_mapData);
@@ -199,7 +199,7 @@ public class InfiniteTerrain : MonoBehaviour
     [System.Serializable]
     public struct LODInfo
     {
-        public int LOD;
+        public int lod;
         public float visibleDistanceThreshold;
     }
 }
