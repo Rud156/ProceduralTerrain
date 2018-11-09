@@ -197,9 +197,9 @@ public class InfiniteTerrain : MonoBehaviour
             _mapData = mapData;
             _mapDataReceived = true;
 
-            Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap,
-                MapGenerator.mapChunkSize, MapGenerator.mapChunkSize);
-            _meshRenderer.material.mainTexture = texture;
+            // Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap,
+            //     MapGenerator.mapChunkSize, MapGenerator.mapChunkSize);
+            // _meshRenderer.material.mainTexture = texture;
 
             UpdateTerrainChunk();
         }
