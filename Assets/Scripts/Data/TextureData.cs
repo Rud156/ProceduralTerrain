@@ -9,6 +9,9 @@ public class TextureData : UpdatebleData
     [Range(0, 1)]
     public float[] baseStartHeights;
 
+    [Range(0, 1)]
+    public float[] baseBlends;
+
     private float _savedMinHeight;
     private float _savedMaxHeight;
 
@@ -17,6 +20,7 @@ public class TextureData : UpdatebleData
         material.SetInt("baseColorCount", baseColors.Length);
         material.SetColorArray("baseColors", baseColors);
         material.SetFloatArray("baseStartHeights", baseStartHeights);
+        material.SetFloatArray("baseBlends", baseBlends);
 
         UpdateMeshHeights(material, _savedMinHeight, _savedMaxHeight);
     }
