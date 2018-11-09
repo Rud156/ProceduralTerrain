@@ -53,6 +53,9 @@ public class MapGenerator : MonoBehaviour
     {
         _mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
         _meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
+
+        textureData.ApplyToMaterial(terrainMaterial);
+        textureData.UpdateMeshHeights(terrainMaterial, terrainData.minHeight, terrainData.maxHeight);
     }
 
     /// <summary>
@@ -89,6 +92,8 @@ public class MapGenerator : MonoBehaviour
 
     public void DrawMapInEditor()
     {
+        textureData.UpdateMeshHeights(terrainMaterial, terrainData.minHeight, terrainData.maxHeight);
+
         MapData mapData = GenerateMapData(Vector2.zero);
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
 
@@ -212,8 +217,6 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         }
-
-        textureData.UpdateMeshHeights(terrainMaterial, terrainData.minHeight, terrainData.maxHeight);
 
         return new MapData(noiseMap);
     }

@@ -16,6 +16,8 @@ public class NoiseData : UpdatebleData
     public int seed;
     public Vector2 offset;
 
+#if UNITY_EDITOR
+
     /// <summary>
     /// Called when the script is loaded or a value is changed in the
     /// inspector (Called in the editor only).
@@ -30,4 +32,6 @@ public class NoiseData : UpdatebleData
 
         base.OnValidate();
     }
+
+#endif
 }
