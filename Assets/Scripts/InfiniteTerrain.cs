@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class InfiniteTerrain : MonoBehaviour
 {
-    private const float scale = 2;
     private const float _viewerMoveThresholdForChunkUpdate = 25f;
     private const float _sqrViewerMoveThresholdForChunkUpdate =
         _viewerMoveThresholdForChunkUpdate * _viewerMoveThresholdForChunkUpdate;
@@ -49,7 +48,7 @@ public class InfiniteTerrain : MonoBehaviour
     /// </summary>
     void Update()
     {
-        viewerPosition = (new Vector2(viewer.position.x, viewer.position.z) / scale);
+        viewerPosition = (new Vector2(viewer.position.x, viewer.position.z) / _mapGenerator.terrainData.uniformScale);
 
         if ((_prevViewerPosition - viewerPosition).sqrMagnitude > _sqrViewerMoveThresholdForChunkUpdate)
         {
@@ -118,9 +117,9 @@ public class InfiniteTerrain : MonoBehaviour
             Vector3 positionV3 = new Vector3(_position.x, 0, _position.y);
 
             _meshObject = new GameObject("Terrain Chunk");
-            _meshObject.transform.position = positionV3 * scale;
+            _meshObject.transform.position = positionV3 * _mapGenerator.terrainData.uniformScale;
             _meshObject.transform.SetParent(parent);
-            _meshObject.transform.localScale = Vector3.one * scale;
+            _meshObject.transform.localScale = Vector3.one * _mapGenerator.terrainData.uniformScale;
 
             _meshRenderer = _meshObject.AddComponent<MeshRenderer>();
             _meshRenderer.material = material;

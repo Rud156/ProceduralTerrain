@@ -13,33 +13,16 @@ public class MapGenerator : MonoBehaviour
         Mesh,
         FalloffMap
     }
-
-    public Noise.NormalizedMode normalizedMode;
     public DrawMode drawMode;
 
     [Header("Map Size Data")]
     [Range(0, 6)]
     public int editorPreviewLOD;
-    public float noiseScale;
-
-    [Header("Map Noise Data")]
-    public int octaves;
-    [Range(0, 1)]
-    public float persistance;
-    public float lacunarity;
-
-    [Header("Randomness")]
-    public int seed;
-    public Vector2 offset;
-
-    [Header("Mesh Data")]
-    public float heightMultiplier;
-    public AnimationCurve heightCurve;
-    public bool useFlatShading;
+    public TerrainData terrainData;
+    public NoiseData noiseData;
 
     [Header("Color Data")]
     public TerrainType[] regions;
-    public bool useFalloff;
 
     [Header("Debug")]
     public bool autoUpdate;
@@ -58,7 +41,7 @@ public class MapGenerator : MonoBehaviour
             if (_instance == null)
                 _instance = FindObjectOfType<MapGenerator>();
 
-            if (_instance.useFlatShading)
+            if (_instance.terrainData.useFlatShading)
                 return 95;
             else
                 return 239;
@@ -101,6 +84,12 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
+    private void OnValuesUpdated()
+    {
+        if (!Application.isPlaying)
+            DrawMapInEditor();
+    }
+
     public void DrawMapInEditor()
     {
         MapData mapData = GenerateMapData(Vector2.zero);
@@ -112,8 +101,13 @@ public class MapGenerator : MonoBehaviour
             mapDisplay.DrawTexture(TextureGenerator.TextureFromColorMap(mapData.colorMap,
                 mapChunkSize, mapChunkSize));
         else if (drawMode == DrawMode.Mesh)
-            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, heightMultiplier,
-                heightCurve, editorPreviewLOD, useFlatShading),
+            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(
+                    mapData.heightMap,
+                    terrainData.heightMultiplier,
+                    terrainData.heightCurve,
+                    editorPreviewLOD,
+                    terrainData.useFlatShading
+                ),
                 TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
         else if (drawMode == DrawMode.FalloffMap)
             mapDisplay.DrawTexture(TextureGenerator.TextureFromHeightMap(
@@ -154,8 +148,13 @@ public class MapGenerator : MonoBehaviour
     private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
     {
         MeshData meshData =
-            MeshGenerator.GenerateTerrainMesh(mapData.heightMap,
-                heightMultiplier, heightCurve, lod, useFlatShading);
+            MeshGenerator.GenerateTerrainMesh(
+                    mapData.heightMap,
+                    terrainData.heightMultiplier,
+                    terrainData.heightCurve,
+                    lod,
+                    terrainData.useFlatShading
+                );
         lock (_meshDataThreadInfoQueue)
         {
             _meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
@@ -164,9 +163,17 @@ public class MapGenerator : MonoBehaviour
 
     private MapData GenerateMapData(Vector2 center)
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize + 2, mapChunkSize + 2, seed, noiseScale,
-            octaves, persistance, lacunarity,
-          center + offset, normalizedMode);
+        float[,] noiseMap = Noise.GenerateNoiseMap(
+            mapChunkSize + 2,
+            mapChunkSize + 2,
+            noiseData.seed,
+            noiseData.noiseScale,
+            noiseData.octaves,
+            noiseData.persistance,
+            noiseData.lacunarity,
+            center + noiseData.offset,
+            noiseData.normalizedMode
+        );
 
         Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
 
@@ -174,7 +181,7 @@ public class MapGenerator : MonoBehaviour
         {
             for (int y = 0; y < mapChunkSize; y++)
             {
-                if (useFalloff)
+                if (terrainData.useFalloff)
                     noiseMap[x, y] = Mathf.Clamp01(noiseMap[x, y] - _falloffMap[x, y]);
 
                 float currentHeight = noiseMap[x, y];
@@ -197,11 +204,16 @@ public class MapGenerator : MonoBehaviour
     /// </summary>
     void OnValidate()
     {
-        if (lacunarity < 1)
-            lacunarity = 1;
-
-        if (octaves < 0)
-            octaves = 0;
+        if (terrainData != null)
+        {
+            terrainData.OnValuesUpdated -= OnValuesUpdated;
+            terrainData.OnValuesUpdated += OnValuesUpdated;
+        }
+        if (noiseData != null)
+        {
+            noiseData.OnValuesUpdated -= OnValuesUpdated;
+            noiseData.OnValuesUpdated += OnValuesUpdated;
+        }
 
         _falloffMap = FalloffGenerator.GenerateFalloffMap(mapChunkSize);
     }
