@@ -16,15 +16,18 @@ public class MapGenerator : MonoBehaviour
     public DrawMode drawMode;
 
     [Header("Map Data")]
-    [Range(0, 6)]
+    [Range(0, MeshGenerator.numSupportedLODs - 1)]
     public int editorPreviewLOD;
     public TerrainData terrainData;
     public NoiseData noiseData;
     public TextureData textureData;
     public Material terrainMaterial;
 
-    [Header("Color Data")]
-    // public TerrainType[] regions;
+    [Header("Chunk Data")]
+    [Range(0, MeshGenerator.numSupportedChunkSizes - 1)]
+    public int chunkSizeIndex;
+    [Range(0, MeshGenerator.numSupportedFlatshadedChunkSizes - 1)]
+    public int flatshadedChunkSizeIndex;
 
     [Header("Debug")]
     public bool autoUpdate;
@@ -39,9 +42,9 @@ public class MapGenerator : MonoBehaviour
         get
         {
             if (terrainData.useFlatShading)
-                return 95;
+                return MeshGenerator.supportedFlatshadedChunkSizes[flatshadedChunkSizeIndex] - 1;
             else
-                return 239;
+                return MeshGenerator.supportedChunkSizes[chunkSizeIndex] - 1;
         }
     }
 
@@ -99,9 +102,6 @@ public class MapGenerator : MonoBehaviour
 
         if (drawMode == DrawMode.NoiseMap)
             mapDisplay.DrawTexture(TextureGenerator.TextureFromHeightMap(mapData.heightMap));
-        // else if (drawMode == DrawMode.ColorMap)
-        //     mapDisplay.DrawTexture(TextureGenerator.TextureFromColorMap(mapData.colorMap,
-        //         mapChunkSize, mapChunkSize));
         else if (drawMode == DrawMode.Mesh)
             mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(
                     mapData.heightMap,
@@ -110,8 +110,6 @@ public class MapGenerator : MonoBehaviour
                     editorPreviewLOD,
                     terrainData.useFlatShading
                 )
-            // ,
-            // TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
             );
         else if (drawMode == DrawMode.FalloffMap)
             mapDisplay.DrawTexture(TextureGenerator.TextureFromHeightMap(
@@ -179,28 +177,6 @@ public class MapGenerator : MonoBehaviour
             noiseData.normalizedMode
         );
 
-        // Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
-
-        // for (int x = 0; x < mapChunkSize; x++)
-        // {
-        //     for (int y = 0; y < mapChunkSize; y++)
-        //     {
-        //         if (terrainData.useFalloff)
-        //             noiseMap[x, y] = Mathf.Clamp01(noiseMap[x, y] - _falloffMap[x, y]);
-
-        //         float currentHeight = noiseMap[x, y];
-        //         for (int i = 0; i < regions.Length; i++)
-        //         {
-        //             if (currentHeight >= regions[i].height)
-        //                 colorMap[y * mapChunkSize + x] = regions[i].color;
-        //             else
-        //                 break;
-        //         }
-        //     }
-        // }
-
-        // return new MapData(noiseMap, colorMap);
-
         if (terrainData.useFalloff)
         {
             if (_falloffMap == null)
@@ -258,23 +234,12 @@ public class MapGenerator : MonoBehaviour
         }
     }
 }
-
-// [System.Serializable]
-// public struct TerrainType
-// {
-//     public string name;
-//     public float height;
-//     public Color color;
-// }
-
 public struct MapData
 {
     public readonly float[,] heightMap;
-    // public readonly Color[] colorMap;
 
     public MapData(float[,] heightMap)
     {
         this.heightMap = heightMap;
-        // this.colorMap = colorMap;
     }
 }
