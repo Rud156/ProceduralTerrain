@@ -11,6 +11,9 @@ public class UpdatableDataEditor : Editor
         UpdatebleData data = (UpdatebleData)target;
 
         if (GUILayout.Button("Update"))
+        {
             data.NotifyOnValuesUpdated();
+            EditorUtility.SetDirty(target);
+        }
     }
 }
