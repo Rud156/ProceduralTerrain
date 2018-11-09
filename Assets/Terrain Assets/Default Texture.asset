@@ -20,4 +20,7 @@ MonoBehaviour:
   - 0
   - 0.4
   - 0.727
-  baseBlends: []
+  baseBlends:
+  - 0.308
+  - 0.505
+  - 0.454

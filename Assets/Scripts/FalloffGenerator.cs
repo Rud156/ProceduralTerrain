@@ -28,6 +28,5 @@ public static class FalloffGenerator
         float b = 2.2f;
 
         return Mathf.Pow(value, a) / (Mathf.Pow(value, b) + Mathf.Pow(b * (1 - value), a));
-
     }
 }
