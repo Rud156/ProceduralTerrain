@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 public class UpdatebleData : ScriptableObject
 {
@@ -12,8 +13,12 @@ public class UpdatebleData : ScriptableObject
     protected virtual void OnValidate()
     {
         if (autoUpdate)
-            NotifyOnValuesUpdated();
+            EditorApplication.update += NotifyOnValuesUpdated;
     }
 
-    public void NotifyOnValuesUpdated() => OnValuesUpdated?.Invoke();
+    public void NotifyOnValuesUpdated()
+    {
+        EditorApplication.update -= NotifyOnValuesUpdated;
+        OnValuesUpdated?.Invoke();
+    }
 }

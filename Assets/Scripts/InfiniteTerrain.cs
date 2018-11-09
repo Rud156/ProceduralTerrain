@@ -30,15 +30,15 @@ public class InfiniteTerrain : MonoBehaviour
     /// </summary>
     void Start()
     {
-        maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
-
-        _chunkSize = MapGenerator.mapChunkSize - 1;
-        _chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / _chunkSize);
-
         _terrainChunkDict = new Dictionary<Vector2, TerrainChunk>();
         _terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
 
         _mapGenerator = GameObject.FindObjectOfType<MapGenerator>();
+
+        maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
+
+        _chunkSize = _mapGenerator.mapChunkSize - 1;
+        _chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / _chunkSize);
 
         UpdateVisibleChunks();
     }

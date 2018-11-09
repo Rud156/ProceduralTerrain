@@ -12,4 +12,19 @@ public class TerrainData : UpdatebleData
     [Header("Color Data")]
     public bool useFlatShading;
     public bool useFalloff;
+
+    public float minHeight
+    {
+        get
+        {
+            return uniformScale * heightMultiplier * heightCurve.Evaluate(0);
+        }
+    }
+    public float maxHeight
+    {
+        get
+        {
+            return uniformScale * heightMultiplier * heightCurve.Evaluate(1);
+        }
+    }
 }
