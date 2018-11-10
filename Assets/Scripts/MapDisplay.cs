@@ -19,7 +19,7 @@ public class MapDisplay : MonoBehaviour
     {
         meshFilter.sharedMesh = meshData.CreateMesh();
         meshFilter.transform.localScale =
-            Vector3.one * FindObjectOfType<MapGenerator>().terrainData.uniformScale;
+            Vector3.one * FindObjectOfType<MapGenerator>().meshSettings.meshScale;
         // meshRenderer.sharedMaterial.mainTexture = texture;
     }
 }
