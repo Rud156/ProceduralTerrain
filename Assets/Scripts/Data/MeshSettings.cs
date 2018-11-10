@@ -29,7 +29,7 @@ public class MeshSettings : UpdatebleData
         }
     }
 
-    public float meshWordlSize
+    public float meshWorldSize
     {
         get
         {
