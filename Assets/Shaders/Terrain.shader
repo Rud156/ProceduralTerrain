@@ -1,7 +1,7 @@
 ﻿Shader "Custom/Terrain" {
 	Properties {
-		testTexture("Texture", 2D) = "white"{}
-		testScale("Scale", Float) = 1
+		terrainTexture("Texture", 2D) = "white"{}
+		terrainScale("Scale", Float) = 1
 
 		[Toggle(USE_TEXTURE)] useTexture("Use Texture", Float) = 0
 	}
@@ -31,8 +31,8 @@
 		float minHeight;
 		float maxHeight;
 
-		sampler2D testTexture; 
-		float testScale;
+		sampler2D terrainTexture; 
+		float terrainScale;
 
 		UNITY_DECLARE_TEX2DARRAY(baseTextures);
 
