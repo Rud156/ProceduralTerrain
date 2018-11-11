@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class ThreadedDataRequester : MonoBehaviour
 {
-    private Queue<ThreadInfo> _dataQueue;
-
     #region Singleton
 
     private static ThreadedDataRequester _instance;
@@ -24,6 +22,8 @@ public class ThreadedDataRequester : MonoBehaviour
     }
 
     #endregion Singleton
+
+    private Queue<ThreadInfo> _dataQueue;
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before

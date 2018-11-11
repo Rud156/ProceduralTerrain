@@ -5,6 +5,25 @@ using UnityEngine;
 
 public class MapPreview : MonoBehaviour
 {
+    #region Singleton
+
+    private static MapPreview _instance;
+
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    void Awake()
+    {
+        if (_instance == null)
+            _instance = this;
+
+        if (_instance != this)
+            Destroy(gameObject);
+    }
+
+    #endregion Singleton
+
+
     public enum DrawMode
     {
         NoiseMap,
@@ -28,24 +47,6 @@ public class MapPreview : MonoBehaviour
 
     [Header("Debug")]
     public bool autoUpdate;
-
-    #region Singleton
-
-    private static MapPreview _instance;
-
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
-    void Awake()
-    {
-        if (_instance == null)
-            _instance = this;
-
-        if (_instance != this)
-            Destroy(gameObject);
-    }
-
-    #endregion Singleton
 
     public void DrawMapInEditor()
     {

@@ -3,7 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class NoiseSettings
 {
-    public Noise.NormalizedMode normalizedMode;
+    public NoiseGenerator.NormalizedMode normalizedMode;
     public float scale = 50;
 
     [Header("Map Noise Data")]

@@ -4,6 +4,25 @@ using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour
 {
+    #region Singleton
+
+    private static TerrainGenerator _instance;
+
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    void Awake()
+    {
+        if (_instance == null)
+            _instance = this;
+
+        if (_instance != this)
+            Destroy(gameObject);
+    }
+
+    #endregion Singleton
+
+
     [Header("Settings")]
     public MeshSettings meshSettings;
     public HeightMapSettings heightMapSettings;
@@ -28,24 +47,6 @@ public class TerrainGenerator : MonoBehaviour
     private Dictionary<Vector2, TerrainChunk> _terrainChunkDict;
 
     private Vector2 _prevViewerPosition;
-
-    #region Singleton
-
-    private static TerrainGenerator _instance;
-
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
-    void Awake()
-    {
-        if (_instance == null)
-            _instance = this;
-
-        if (_instance != this)
-            Destroy(gameObject);
-    }
-
-    #endregion Singleton
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
