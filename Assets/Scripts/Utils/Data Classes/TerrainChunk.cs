@@ -69,6 +69,8 @@ public class TerrainChunk
         _meshFilter = _meshObject.AddComponent<MeshFilter>();
         _meshCollider = _meshObject.AddComponent<MeshCollider>();
 
+        _chunkTrees = new Trees(position);
+
         // Dividing by 10 as plane is 10 units by default
         // _meshObject.transform.localScale = Vector3.one * size / 10f;
         SetVisible(false);
@@ -81,8 +83,6 @@ public class TerrainChunk
             if (i == _colliderLODIndex)
                 _lodMeshes[i].updateCallback += UpdateCollisionMesh;
         }
-
-        _chunkTrees = new Trees(position);
 
         _maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
     }
@@ -177,7 +177,13 @@ public class TerrainChunk
         }
     }
 
-    public void SetVisible(bool visible) => _meshObject.SetActive(visible);
+    public void SetVisible(bool visible)
+    {
+        if (!visible)
+            _chunkTrees.ClearTrees();
+
+        _meshObject.SetActive(visible);
+    }
 
     public bool IsVisible() => _meshObject.activeSelf;
 

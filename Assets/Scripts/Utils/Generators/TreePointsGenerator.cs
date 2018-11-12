@@ -8,7 +8,7 @@ public static class TreePointsGenerator
     {
         System.Random random = new System.Random();
         int chunkSize = MeshSettings.supportedChunkSizes[chunkSizeIndex];
-        int treePointsCount = random.Next() % 240 * chunkSize;
+        int treePointsCount = Mathf.FloorToInt(random.Next(0, 100) / 240.0f * chunkSize);
 
         Vector3[] selectedPoints = new Vector3[treePointsCount];
         int counter = 0;

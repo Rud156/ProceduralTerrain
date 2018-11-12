@@ -17,10 +17,10 @@ MonoBehaviour:
     scale: 50
     octaves: 8
     persistance: 0.6
-    lacunarity: 2
+    lacunarity: 1.5
     seed: 0
     offset: {x: 0, y: 0}
-  heightMultiplier: 20
+  heightMultiplier: 5
   heightCurve:
     serializedVersion: 2
     m_Curve:
