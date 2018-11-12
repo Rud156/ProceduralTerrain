@@ -82,7 +82,7 @@ public class TerrainChunk
                 _lodMeshes[i].updateCallback += UpdateCollisionMesh;
         }
 
-        _chunkTrees = new Trees();
+        _chunkTrees = new Trees(position);
 
         _maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
     }
@@ -240,8 +240,12 @@ class Trees
     public bool hasReceivedTreePoints;
     public bool hasPlacedTrees;
 
-    public Trees()
+    private Vector3 _meshCenter;
+
+    public Trees(Vector2 meshCenter)
     {
+        _meshCenter = new Vector3(meshCenter.x, 0, meshCenter.y);
+
         trees = new GameObject[0];
         treePoints = new Vector3[0];
     }
@@ -272,7 +276,7 @@ class Trees
 
             if (trees[i] != null)
             {
-                trees[i].transform.position = treePoints[i];
+                trees[i].transform.position = treePoints[i] + _meshCenter;
                 trees[i].SetActive(true);
             }
         }
