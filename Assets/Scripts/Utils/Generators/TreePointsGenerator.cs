@@ -10,22 +10,22 @@ public static class TreePointsGenerator
         int chunkSize = MeshSettings.supportedChunkSizes[chunkSizeIndex];
         int treePointsCount = random.Next() % 240 * chunkSize;
 
-        Vector3[] selectedVertices = new Vector3[treePointsCount];
+        Vector3[] selectedPoints = new Vector3[treePointsCount];
         int counter = 0;
 
         for (int i = 0; i < vertices.Length; i++)
         {
-            bool isPointSelected = random.NextDouble() < 0.02f;
+            bool isPointSelected = random.NextDouble() < 0.005f;
             if (!isPointSelected)
                 continue;
 
             if (counter >= treePointsCount)
                 break;
 
-            selectedVertices[counter] = vertices[i];
+            selectedPoints[counter] = vertices[i];
             counter += 1;
         }
 
-        return selectedVertices;
+        return selectedPoints;
     }
 }

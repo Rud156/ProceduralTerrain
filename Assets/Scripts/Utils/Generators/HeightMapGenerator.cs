@@ -9,8 +9,9 @@ public static class HeightMapGenerator
     public static HeightMap GenerateHeightMap(int width, int height, HeightMapSettings settings,
         Vector2 sampleCenter)
     {
-        float[,] values = NoiseGenerator
+        float[,] noiseMap = NoiseGenerator
             .GenerateNoiseMap(width, height, settings.noiseSettings, sampleCenter);
+        float[,] values = noiseMap;
         AnimationCurve heightCurveThreadSafe = new AnimationCurve(settings.heightCurve.keys);
 
         float minValue = float.MaxValue;

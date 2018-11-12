@@ -82,7 +82,7 @@ public class TerrainChunk
                 _lodMeshes[i].updateCallback += UpdateCollisionMesh;
         }
 
-        _chunkTrees = new Trees(heightMapSettings.heightMultiplier);
+        _chunkTrees = new Trees();
 
         _maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
     }
@@ -134,8 +134,10 @@ public class TerrainChunk
                 if (lodIndex == 0 && lodMesh.hasMesh)
                 {
                     if (!_chunkTrees.hasRequestedTreePoints)
-                        _chunkTrees.RequestTreePoints(lodMesh.meshVertices,
-                            _meshSettings.chunkSizeIndex);
+                        _chunkTrees.RequestTreePoints(
+                            lodMesh.meshVertices,
+                            _meshSettings.chunkSizeIndex
+                        );
                     else if (!_chunkTrees.hasPlacedTrees && _chunkTrees.hasReceivedTreePoints)
                         _chunkTrees.PlaceTreesOnPoints();
                 }
@@ -238,21 +240,19 @@ class Trees
     public bool hasReceivedTreePoints;
     public bool hasPlacedTrees;
 
-    private float _heightMultiplier;
-
-    public Trees(float heightMultiplier)
+    public Trees()
     {
-        _heightMultiplier = heightMultiplier;
         trees = new GameObject[0];
         treePoints = new Vector3[0];
     }
 
-    public void RequestTreePoints(Vector3[] vertices, int chunkSizeIndex)
+    public void RequestTreePoints(Vector3[] meshVertices, int chunkSizeIndex)
     {
         hasRequestedTreePoints = true;
+
         ThreadedDataRequester.RequestData(
             () =>
-                TreePointsGenerator.SelectTreePoints(vertices, chunkSizeIndex),
+                TreePointsGenerator.SelectTreePoints(meshVertices, chunkSizeIndex),
             OnTreePointsReceived
         );
     }
@@ -260,9 +260,16 @@ class Trees
     public void PlaceTreesOnPoints()
     {
         hasPlacedTrees = true;
+        float maxValue = float.MinValue;
+        for (int i = 0; i < treePoints.Length; i++)
+            if (treePoints[i].y > maxValue)
+                maxValue = treePoints[i].y;
+
         for (int i = 0; i < treePoints.Length; i++)
         {
-            trees[i] = TreesManager.instance.RequestTree(treePoints[i].y / _heightMultiplier);
+            float normalizedPoint = ExtensionFunctions.Map(treePoints[i].y, 0, maxValue, 0, 1);
+            trees[i] = TreesManager.instance.RequestTree(normalizedPoint);
+
             if (trees[i] != null)
             {
                 trees[i].transform.position = treePoints[i];

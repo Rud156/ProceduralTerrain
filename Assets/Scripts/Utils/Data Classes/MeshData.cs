@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeshData
@@ -17,7 +18,6 @@ public class MeshData
 
     public MeshData(int numVertsPerLine, int skipIncrement, bool useFlatShading)
     {
-
         int numMeshEdgeVertices = (numVertsPerLine - 2) * 4 - 4;
         int numEdgeConnectionVertices = (skipIncrement - 1) * (numVertsPerLine - 5) / skipIncrement * 4;
         int numMainVerticesPerLine = (numVertsPerLine - 5) / skipIncrement + 1;

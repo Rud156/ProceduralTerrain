@@ -19,6 +19,8 @@ public class TreesManager : MonoBehaviour
 
         if (instance != this)
             Destroy(gameObject);
+
+        GenerateTrees();
     }
 
     #endregion Singleton
@@ -42,32 +44,35 @@ public class TreesManager : MonoBehaviour
 
     public List<Tree> trees;
 
-    public GameObject RequestTree(float heightValue)
+    private void GenerateTrees()
     {
         for (int i = 0; i < trees.Count; i++)
         {
-            if (trees[i].minHeightRange <= heightValue && trees[i].maxHeightRange >= heightValue)
+            for (int j = 0; j < trees[i].maxInstanceCount; j++)
             {
-                int maxInstancesPossible = trees[i].maxInstanceCount;
-                int currentInstanceCount = trees[i].instantiatedTrees.Count;
-
-                if (currentInstanceCount >= maxInstancesPossible)
-                {
-                    for (int j = 0; j < trees[i].instantiatedTrees.Count; j++)
-                    {
-                        if (!trees[i].instantiatedTrees[j].activeSelf)
-                            return trees[i].instantiatedTrees[j];
-                    }
-
-                    return null;
-                }
 
                 GameObject treeInstance = Instantiate(trees[i].prefab, Vector3.zero, Quaternion.identity);
                 treeInstance.SetActive(false);
                 treeInstance.transform.SetParent(transform);
 
                 trees[i].instantiatedTrees.Add(treeInstance);
-                return treeInstance;
+            }
+        }
+    }
+
+    public GameObject RequestTree(float heightValue)
+    {
+        for (int i = 0; i < trees.Count; i++)
+        {
+            if (trees[i].minHeightRange <= heightValue && trees[i].maxHeightRange >= heightValue)
+            {
+                for (int j = 0; j < trees[i].maxInstanceCount; j++)
+                {
+                    if (!trees[i].instantiatedTrees[j].activeSelf)
+                        return trees[i].instantiatedTrees[j];
+                }
+
+                return null;
             }
         }
 

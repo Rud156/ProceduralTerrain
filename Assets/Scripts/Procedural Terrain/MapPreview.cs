@@ -70,9 +70,10 @@ public class MapPreview : MonoBehaviour
                 )
             );
         else
-            DrawTexture(TextureGenerator.TextureFromHeightMap(
-              new HeightMap(FalloffGenerator.GenerateFalloffMap(meshSettings.numVerticesPerLine), 0, 1)
-            ));
+        {
+            float[,] values = FalloffGenerator.GenerateFalloffMap(meshSettings.numVerticesPerLine);
+            DrawTexture(TextureGenerator.TextureFromHeightMap(new HeightMap(values, 0, 1)));
+        }
     }
 
     /// <summary>
