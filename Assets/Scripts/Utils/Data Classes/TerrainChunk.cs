@@ -28,10 +28,13 @@ public class TerrainChunk
     private bool _hasSetCollider;
     private float _maxViewDistance;
 
+    private Trees _chunkTrees;
+
     private HeightMapSettings _heightMapSettings;
     private MeshSettings _meshSettings;
 
     private Transform _viewer;
+
     private Vector2 viewerPosition
     {
         get
@@ -79,6 +82,8 @@ public class TerrainChunk
                 _lodMeshes[i].updateCallback += UpdateCollisionMesh;
         }
 
+        _chunkTrees = new Trees(heightMapSettings.heightMultiplier);
+
         _maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
     }
 
@@ -124,6 +129,18 @@ public class TerrainChunk
                 }
                 else if (!lodMesh.hasRequestedMesh)
                     lodMesh.RequestMesh(_heightMap, _meshSettings);
+
+
+                if (lodIndex == 0 && lodMesh.hasMesh)
+                {
+                    if (!_chunkTrees.hasRequestedTreePoints)
+                        _chunkTrees.RequestTreePoints(lodMesh.meshVertices,
+                            _meshSettings.chunkSizeIndex);
+                    else if (!_chunkTrees.hasPlacedTrees && _chunkTrees.hasReceivedTreePoints)
+                        _chunkTrees.PlaceTreesOnPoints();
+                }
+                else
+                    _chunkTrees.ClearTrees();
             }
 
         }
@@ -167,10 +184,6 @@ public class TerrainChunk
         _heightMap = (HeightMap)heightMapObject;
         _heightMapReceived = true;
 
-        // Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap,
-        //     MapGenerator.mapChunkSize, MapGenerator.mapChunkSize);
-        // _meshRenderer.material.mainTexture = texture;
-
         UpdateTerrainChunk();
     }
 
@@ -182,6 +195,9 @@ class LODMesh
     public Mesh mesh;
     public bool hasRequestedMesh;
     public bool hasMesh;
+
+    public Vector3[] meshVertices;
+
     public event System.Action updateCallback;
 
     private int _lod;
@@ -203,9 +219,73 @@ class LODMesh
 
     private void OnMeshDataReceived(object meshDataObject)
     {
-        mesh = ((MeshData)meshDataObject).CreateMesh();
+        MeshData meshData = (MeshData)meshDataObject;
+
+        mesh = meshData.CreateMesh();
         hasMesh = true;
+        meshVertices = meshData.GetVertices();
 
         updateCallback?.Invoke();
+    }
+}
+
+class Trees
+{
+    public GameObject[] trees;
+    public Vector3[] treePoints;
+
+    public bool hasRequestedTreePoints;
+    public bool hasReceivedTreePoints;
+    public bool hasPlacedTrees;
+
+    private float _heightMultiplier;
+
+    public Trees(float heightMultiplier)
+    {
+        _heightMultiplier = heightMultiplier;
+        trees = new GameObject[0];
+        treePoints = new Vector3[0];
+    }
+
+    public void RequestTreePoints(Vector3[] vertices, int chunkSizeIndex)
+    {
+        hasRequestedTreePoints = true;
+        ThreadedDataRequester.RequestData(
+            () =>
+                TreePointsGenerator.SelectTreePoints(vertices, chunkSizeIndex),
+            OnTreePointsReceived
+        );
+    }
+
+    public void PlaceTreesOnPoints()
+    {
+        hasPlacedTrees = true;
+        for (int i = 0; i < treePoints.Length; i++)
+        {
+            trees[i] = TreesManager.instance.RequestTree(treePoints[i].y / _heightMultiplier);
+            if (trees[i] != null)
+            {
+                trees[i].transform.position = treePoints[i];
+                trees[i].SetActive(true);
+            }
+        }
+    }
+
+    public void ClearTrees()
+    {
+        for (int i = 0; i < trees.Length; i++)
+            trees[i]?.SetActive(false);
+
+        hasPlacedTrees = false;
+    }
+
+    private void OnTreePointsReceived(object treePointsObject)
+    {
+
+        hasReceivedTreePoints = true;
+        treePoints = (Vector3[])treePointsObject;
+        trees = new GameObject[treePoints.Length];
+
+        PlaceTreesOnPoints();
     }
 }

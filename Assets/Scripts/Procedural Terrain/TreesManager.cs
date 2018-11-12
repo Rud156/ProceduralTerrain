@@ -64,6 +64,7 @@ public class TreesManager : MonoBehaviour
 
                 GameObject treeInstance = Instantiate(trees[i].prefab, Vector3.zero, Quaternion.identity);
                 treeInstance.SetActive(false);
+                treeInstance.transform.SetParent(transform);
 
                 trees[i].instantiatedTrees.Add(treeInstance);
                 return treeInstance;

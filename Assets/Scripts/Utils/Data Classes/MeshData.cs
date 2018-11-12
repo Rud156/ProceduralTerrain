@@ -38,6 +38,8 @@ public class MeshData
         _outOfMeshTriangleIndex = 0;
     }
 
+    public Vector3[] GetVertices() => _vertices;
+
     public void AddVertex(Vector3 vertexPosition, Vector2 uv, int vertexIndex)
     {
         if (vertexIndex < 0)

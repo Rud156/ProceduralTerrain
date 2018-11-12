@@ -54,6 +54,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - terrainTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - testTexture:
         m_Texture: {fileID: 2800000, guid: dd974258926f47140b35a5e6a1a2151a, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -75,6 +79,7 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
+    - terrainScale: 1
     - testScale: 34.46
     - useTexture: 0
     m_Colors:

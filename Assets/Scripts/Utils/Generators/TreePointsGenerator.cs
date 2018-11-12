@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public static class TreePointsGenerator
+{
+    public static Vector3[] SelectTreePoints(Vector3[] vertices, int chunkSizeIndex)
+    {
+        System.Random random = new System.Random();
+        int chunkSize = MeshSettings.supportedChunkSizes[chunkSizeIndex];
+        int treePointsCount = random.Next() % 240 * chunkSize;
+
+        Vector3[] selectedVertices = new Vector3[treePointsCount];
+        int counter = 0;
+
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            bool isPointSelected = random.NextDouble() < 0.02f;
+            if (!isPointSelected)
+                continue;
+
+            if (counter >= treePointsCount)
+                break;
+
+            selectedVertices[counter] = vertices[i];
+            counter += 1;
+        }
+
+        return selectedVertices;
+    }
+}
