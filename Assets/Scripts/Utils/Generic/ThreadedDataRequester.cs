@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using UnityEngine;
 
@@ -23,13 +23,13 @@ public class ThreadedDataRequester : MonoBehaviour
 
     #endregion Singleton
 
-    private Queue<ThreadInfo> _dataQueue;
+    private ConcurrentQueue<ThreadInfo> _dataQueue;
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
     /// any of the Update methods is called the first time.
     /// </summary>
-    void Start() => _dataQueue = new Queue<ThreadInfo>();
+    void Start() => _dataQueue = new ConcurrentQueue<ThreadInfo>();
 
 
     /// <summary>
@@ -39,36 +39,26 @@ public class ThreadedDataRequester : MonoBehaviour
     {
         if (_dataQueue.Count > 0)
         {
-            for (int i = 0; i < _dataQueue.Count; i++)
-            {
-                ThreadInfo threadInfo = _dataQueue.Dequeue();
+            ThreadInfo threadInfo;
+            while (_dataQueue.TryDequeue(out threadInfo))
                 threadInfo.callback(threadInfo.parameter);
-            }
         }
     }
 
     public static void RequestData(Func<object> generateData, Action<object> callback)
     {
-        ThreadStart threadStart = delegate
-        {
-            _instance.DataThread(generateData, callback);
-        };
-
+        ThreadStart threadStart = new ThreadStart(() => _instance.DataThread(generateData, callback));
         new Thread(threadStart).Start();
 
     }
 
     private void DataThread(Func<object> generateData, Action<object> callback)
     {
-        object data = generateData();
-
-        lock (_dataQueue)
-        {
-            _dataQueue.Enqueue(new ThreadInfo(callback, data));
-        }
+        object data = generateData.Invoke();
+        _dataQueue.Enqueue(new ThreadInfo(callback, data));
     }
 
-    private struct ThreadInfo
+    private class ThreadInfo
     {
         public readonly Action<object> callback;
         public readonly object parameter;

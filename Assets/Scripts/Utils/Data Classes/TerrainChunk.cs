@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Jobs;
 using UnityEngine;
 
 public class TerrainChunk
@@ -23,6 +24,7 @@ public class TerrainChunk
 
     private HeightMap _heightMap;
 
+    private bool _heightMapRequested;
     private bool _heightMapReceived;
     private int _prevLODIndex;
     private bool _hasSetCollider;
@@ -87,7 +89,9 @@ public class TerrainChunk
         _maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
     }
 
-    public void Load() =>
+    public void Load()
+    {
+        _heightMapRequested = true;
         ThreadedDataRequester.RequestData(
             () =>
                 HeightMapGenerator.GenerateHeightMap(
@@ -98,11 +102,18 @@ public class TerrainChunk
                 ),
             OnHeightMapReceived
         );
+    }
 
     public void UpdateTerrainChunk()
     {
         if (!_heightMapReceived)
+        {
+            if (!_heightMapRequested)
+                Load();
             return;
+        }
+
+
 
         float viewerDistanceFromNearestEdge = Mathf.Sqrt(_bounds.SqrDistance(viewerPosition));
         bool wasVisible = IsVisible();
@@ -141,7 +152,7 @@ public class TerrainChunk
                     else if (!_chunkTrees.hasPlacedTrees && _chunkTrees.hasReceivedTreePoints)
                         _chunkTrees.PlaceTreesOnPoints();
                 }
-                else
+                else if (lodIndex != 0)
                     _chunkTrees.ClearTrees();
             }
 
@@ -194,8 +205,6 @@ public class TerrainChunk
 
         UpdateTerrainChunk();
     }
-
-    private void OnMeshDataReceived(MeshData meshData) => _meshFilter.mesh = meshData.CreateMesh();
 }
 
 class LODMesh

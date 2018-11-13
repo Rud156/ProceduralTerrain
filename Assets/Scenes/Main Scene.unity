@@ -113,63 +113,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &206295258
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 206295260}
-  - component: {fileID: 206295259}
-  m_Layer: 0
-  m_Name: Tree Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &206295259
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 206295258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5513df9c43421ae428f90ecfd2586568, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  trees:
-  - prefab: {fileID: 1418248808795844, guid: 85aea5e069081c64494ce6b9294ff706, type: 2}
-    maxInstanceCount: 500
-    minHeightRange: 0.8
-    maxHeightRange: 1
-    instantiatedTrees: []
-  - prefab: {fileID: 1000010440778128, guid: 3fdc0763b1ed46340a37c14b117e5d08, type: 2}
-    maxInstanceCount: 500
-    minHeightRange: 0.4
-    maxHeightRange: 0.7
-    instantiatedTrees: []
-  - prefab: {fileID: 1000012883012200, guid: 2698c1f2da0ab8543b9bebee97607aed, type: 2}
-    maxInstanceCount: 500
-    minHeightRange: 0
-    maxHeightRange: 0.2
-    instantiatedTrees: []
---- !u!4 &206295260
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 206295258}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!43 &209667413
+--- !u!43 &160714421
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -324,6 +268,62 @@ Mesh:
   m_MeshMetrics[0]: 1
   m_MeshMetrics[1]: 1
   m_MeshOptimized: 0
+--- !u!1 &206295258
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 206295260}
+  - component: {fileID: 206295259}
+  m_Layer: 0
+  m_Name: Tree Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &206295259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 206295258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5513df9c43421ae428f90ecfd2586568, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trees:
+  - prefab: {fileID: 1418248808795844, guid: 85aea5e069081c64494ce6b9294ff706, type: 2}
+    maxInstanceCount: 500
+    minHeightRange: 0.8
+    maxHeightRange: 1
+    instantiatedTrees: []
+  - prefab: {fileID: 1000010440778128, guid: 3fdc0763b1ed46340a37c14b117e5d08, type: 2}
+    maxInstanceCount: 500
+    minHeightRange: 0.4
+    maxHeightRange: 0.7
+    instantiatedTrees: []
+  - prefab: {fileID: 1000012883012200, guid: 2698c1f2da0ab8543b9bebee97607aed, type: 2}
+    maxInstanceCount: 500
+    minHeightRange: 0
+    maxHeightRange: 0.2
+    instantiatedTrees: []
+--- !u!4 &206295260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 206295258}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &221703670 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100006, guid: c6453f8e1f814744d8b94e5a6d1f9942,
@@ -1079,7 +1079,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1884508030}
-  m_Mesh: {fileID: 209667413}
+  m_Mesh: {fileID: 160714421}
 --- !u!4 &1884508033
 Transform:
   m_ObjectHideFlags: 0

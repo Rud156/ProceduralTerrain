@@ -34,6 +34,9 @@ public class TerrainGenerator : MonoBehaviour
     public LODInfo[] detailLevels;
     public int colliderLODIndex;
 
+    [Header("Terrain Size")]
+    public bool fixedTerrainSize;
+
     private const float _viewerMoveThresholdForChunkUpdate = 25f;
     private const float _sqrViewerMoveThresholdForChunkUpdate =
         _viewerMoveThresholdForChunkUpdate * _viewerMoveThresholdForChunkUpdate;
@@ -47,6 +50,7 @@ public class TerrainGenerator : MonoBehaviour
     private Dictionary<Vector2, TerrainChunk> _terrainChunkDict;
 
     private Vector2 _prevViewerPosition;
+    private bool _updatingChunks;
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
@@ -67,8 +71,9 @@ public class TerrainGenerator : MonoBehaviour
 
         _meshWorldSize = meshSettings.meshWorldSize;
         _chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / _meshWorldSize);
+        _updatingChunks = false;
 
-        UpdateVisibleChunks();
+        StartCoroutine(UpdateVisibleChunks(true));
     }
 
     /// <summary>
@@ -83,21 +88,24 @@ public class TerrainGenerator : MonoBehaviour
                 chunk.UpdateCollisionMesh();
 
 
-        if ((_prevViewerPosition - _viewerPosition).sqrMagnitude > _sqrViewerMoveThresholdForChunkUpdate)
+        if ((_prevViewerPosition - _viewerPosition).sqrMagnitude > _sqrViewerMoveThresholdForChunkUpdate
+            && !_updatingChunks)
         {
-            UpdateVisibleChunks();
+            StartCoroutine(UpdateVisibleChunks(!fixedTerrainSize));
             _prevViewerPosition = _viewerPosition;
         }
     }
 
-    private void UpdateVisibleChunks()
+    private IEnumerator UpdateVisibleChunks(bool createNewChunks)
     {
+        _updatingChunks = true;
         HashSet<Vector2> alreadyUpdatedChunkCoords = new HashSet<Vector2>();
 
         for (int i = _visibleTerrainChunks.Count - 1; i >= 0; i--)
         {
             alreadyUpdatedChunkCoords.Add(_visibleTerrainChunks[i].coord);
             _visibleTerrainChunks[i].UpdateTerrainChunk();
+            yield return null;
         }
 
         int currentChunkCoordX = Mathf.RoundToInt(_viewerPosition.x / _meshWorldSize);
@@ -118,7 +126,7 @@ public class TerrainGenerator : MonoBehaviour
                     {
                         _terrainChunkDict[viewChunkCoord].UpdateTerrainChunk();
                     }
-                    else
+                    else if (createNewChunks)
                     {
                         TerrainChunk newChunk = new TerrainChunk(viewChunkCoord,
                             heightMapSettings, meshSettings,
@@ -128,8 +136,10 @@ public class TerrainGenerator : MonoBehaviour
                         newChunk.Load();
                     }
                 }
+                yield return null;
             }
         }
+        _updatingChunks = false;
     }
 
     private void OnTerrainChunkVisibilityChanged(TerrainChunk terrainChunk, bool isVisible)
