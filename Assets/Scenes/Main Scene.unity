@@ -142,17 +142,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trees:
   - prefab: {fileID: 1418248808795844, guid: 85aea5e069081c64494ce6b9294ff706, type: 2}
-    maxInstanceCount: 500
+    maxInstanceCount: 2000
     minHeightRange: 0.8
     maxHeightRange: 1
     instantiatedTrees: []
   - prefab: {fileID: 1000010440778128, guid: 3fdc0763b1ed46340a37c14b117e5d08, type: 2}
-    maxInstanceCount: 500
+    maxInstanceCount: 2000
     minHeightRange: 0.4
     maxHeightRange: 0.7
     instantiatedTrees: []
   - prefab: {fileID: 1000012883012200, guid: 2698c1f2da0ab8543b9bebee97607aed, type: 2}
-    maxInstanceCount: 500
+    maxInstanceCount: 2000
     minHeightRange: 0
     maxHeightRange: 0.2
     instantiatedTrees: []
