@@ -113,8 +113,6 @@ public class TerrainChunk
             return;
         }
 
-
-
         float viewerDistanceFromNearestEdge = Mathf.Sqrt(_bounds.SqrDistance(viewerPosition));
         bool wasVisible = IsVisible();
         bool visible = viewerDistanceFromNearestEdge <= _maxViewDistance;
@@ -140,7 +138,6 @@ public class TerrainChunk
                 }
                 else if (!lodMesh.hasRequestedMesh)
                     lodMesh.RequestMesh(_heightMap, _meshSettings);
-
 
                 if (lodIndex == 0 && lodMesh.hasMesh)
                 {
